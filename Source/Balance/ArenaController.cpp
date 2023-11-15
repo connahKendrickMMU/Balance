@@ -8,6 +8,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 
+// test code
+#include "HAL/FileManagerGeneric.h"
+#include "Misc/Paths.h"
 // Sets default values
 AArenaController::AArenaController()
 {
@@ -17,18 +20,18 @@ AArenaController::AArenaController()
 	//1st
 	ArenaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArenaMesh"));
 	SetRootComponent(ArenaMesh);
-	// Set the static mesh asset
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Arena>Arena"));
-	if (MeshAsset.Succeeded())
-	{
-		ArenaMesh->SetStaticMesh(MeshAsset.Object);
-	}
+	ArenaMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f)); // Adjust the values as needed
 
 	// 2nd camera
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 500.0f)); 
+	SpringArmComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f)); 
+
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+	CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 5.0f));
+	CameraComponent->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +39,10 @@ void AArenaController::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// shift the platform up
+	FVector NewLocation = GetActorLocation();
+	NewLocation.Z += 100.0f; // Adjust the value based on how much you want to move it
+	SetActorLocation(NewLocation);
 }
 
 // Called every frame
