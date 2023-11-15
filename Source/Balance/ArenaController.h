@@ -15,7 +15,7 @@ public:
 	// Sets default values for this pawn's properties
 	AArenaController();
 
-	//1st 
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* ArenaMesh;
 
@@ -33,7 +33,7 @@ public:
 	// 4th
 	void MoveYaw(float Value);
 
-// 2nd 
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* SpringArmComponent;
@@ -41,7 +41,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;
 
-	// 3rd
+	
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float RotationSpeed = 10.0f; // Adjust the rotation speed as needed
+	float RotationSpeed = 10.0f; 
 };

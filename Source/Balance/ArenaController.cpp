@@ -8,9 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 
-// test code
-#include "HAL/FileManagerGeneric.h"
-#include "Misc/Paths.h"
+
 // Sets default values
 AArenaController::AArenaController()
 {
@@ -20,7 +18,7 @@ AArenaController::AArenaController()
 	//1st
 	ArenaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArenaMesh"));
 	SetRootComponent(ArenaMesh);
-	ArenaMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f)); // Adjust the values as needed
+	ArenaMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f)); 
 
 	// 2nd camera
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -38,11 +36,6 @@ AArenaController::AArenaController()
 void AArenaController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// shift the platform up
-	FVector NewLocation = GetActorLocation();
-	NewLocation.Z += 100.0f; // Adjust the value based on how much you want to move it
-	SetActorLocation(NewLocation);
 }
 
 // Called every frame
@@ -57,7 +50,6 @@ void AArenaController::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// 5th
 	PlayerInputComponent->BindAxis("MoveYaw", this, &AArenaController::MoveYaw);
 }
 
