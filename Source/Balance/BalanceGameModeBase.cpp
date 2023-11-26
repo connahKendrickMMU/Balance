@@ -4,6 +4,7 @@
 #include "BalanceGameModeBase.h"
 #include "ArenaController.h"
 #include "Kismet/GameplayStatics.h"
+
 void ABalanceGameModeBase::StartPlay()
 {
 	Super::StartPlay();

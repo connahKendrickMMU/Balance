@@ -32,6 +32,7 @@ public:
 
 	// 4th
 	void MoveYaw(float Value);
+	void MovePitch(float Value);
 
 
 private:

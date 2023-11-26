@@ -18,7 +18,8 @@ AArenaController::AArenaController()
 	//1st
 	ArenaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArenaMesh"));
 	SetRootComponent(ArenaMesh);
-	ArenaMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f)); 
+	//part 2  1 comment this out
+	//ArenaMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f)); 
 
 	// 2nd camera
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -28,14 +29,21 @@ AArenaController::AArenaController()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
-	CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 5.0f));
-	CameraComponent->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
+	CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	CameraComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));//part 2 1 changed from -20 t 0 on x
 }
 
 // Called when the game starts or when spawned
 void AArenaController::BeginPlay()
 {
 	Super::BeginPlay();
+	ArenaMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
+	SpringArmComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	SpringArmComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+
+	CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
+	CameraComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));//part 2 1 changed from -20 t 0 on x
 }
 
 // Called every frame
@@ -51,6 +59,7 @@ void AArenaController::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveYaw", this, &AArenaController::MoveYaw);
+	PlayerInputComponent->BindAxis("MovePitch", this, &AArenaController::MovePitch);
 }
 
 // 4th 
@@ -58,5 +67,12 @@ void AArenaController::MoveYaw(float Value)
 {
 	FRotator NewRotation = GetActorRotation();
 	NewRotation.Yaw += Value * RotationSpeed * GetWorld()->GetDeltaSeconds();
+	SetActorRotation(NewRotation);
+}
+
+void AArenaController::MovePitch(float Value)
+{
+	FRotator NewRotation = GetActorRotation();
+	NewRotation.Pitch += Value * RotationSpeed * GetWorld()->GetDeltaSeconds();
 	SetActorRotation(NewRotation);
 }
