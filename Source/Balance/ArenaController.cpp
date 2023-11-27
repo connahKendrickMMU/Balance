@@ -7,50 +7,60 @@
 // 2nd camera
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-
+// need for get all actors
+#include <Kismet/GameplayStatics.h>
+#include <Kismet/KismetMathLibrary.h>
 
 // Sets default values
 AArenaController::AArenaController()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	//1st
 	ArenaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArenaMesh"));
 	SetRootComponent(ArenaMesh);
-	//part 2  1 comment this out
-	//ArenaMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f)); 
-
-	// 2nd camera
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArmComponent->SetupAttachment(RootComponent);
-	SpringArmComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 500.0f)); 
-	SpringArmComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f)); 
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	CameraComponent->SetupAttachment(SpringArmComponent);
-	CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-	CameraComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));//part 2 1 changed from -20 t 0 on x
 }
 
 // Called when the game starts or when spawned
 void AArenaController::BeginPlay()
 {
 	Super::BeginPlay();
-	ArenaMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-	SpringArmComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-	SpringArmComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-
-	CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
-	CameraComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));//part 2 1 changed from -20 t 0 on x
+	TArray<AActor*> FoundPlayers;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Ball"), FoundPlayers);
+	// check how many players where found
+	UE_LOG(LogTemp, Warning, TEXT("players found: %d"), FoundPlayers.Num());
+	// Check if we have a player
+	if (FoundPlayers.Num() > 0)
+	{
+		Player = FoundPlayers[0];
+	}
 }
 
 // Called every frame
 void AArenaController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	// part 2 2
+	if (Player != nullptr)
+	{
+		// distance the camera from the player
+		FVector NewCameraLocation = Player->GetActorLocation() - (FVector::ForwardVector * CameraDistance) + FVector(0,0,CameraHeight);
 
+		// place the camera
+		CameraComponent->SetWorldLocation(NewCameraLocation);
+
+		// lookat the player, this can be adjusted to a one time setting but can effect rotation
+		FVector LookAtPlayer = Player->GetActorLocation();
+
+		CameraComponent->SetWorldRotation((LookAtPlayer - CameraComponent->GetComponentLocation()).Rotation());
+		FRotator NewCameraRotation = UKismetMathLibrary::FindLookAtRotation(CameraComponent->GetComponentLocation(), LookAtPlayer);
+		UE_LOG(LogTemp, Warning, TEXT("Grabber Rotation: %s"), *NewCameraRotation.ToString());
+		CameraComponent->SetRelativeRotation(NewCameraRotation);
+	}
 }
 
 // Called to bind functionality to input
@@ -74,5 +84,12 @@ void AArenaController::MovePitch(float Value)
 {
 	FRotator NewRotation = GetActorRotation();
 	NewRotation.Pitch += Value * RotationSpeed * GetWorld()->GetDeltaSeconds();
+	//NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch, MinPitch, MaxPitch);
 	SetActorRotation(NewRotation);
+}
+
+void AArenaController::ResetArena()
+{
+
+	SetActorRotation(FRotator::ZeroRotator);
 }
